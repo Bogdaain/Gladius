@@ -467,6 +467,7 @@ GameObject:
   - component: {fileID: 262046170}
   - component: {fileID: 262046172}
   - component: {fileID: 262046173}
+  - component: {fileID: 262046174}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -575,6 +576,10 @@ MonoBehaviour:
   maxWallJumps: 3
   wallJumpRefreshesDash: 1
   wallSlideFallSpeed: 4
+  fallGravityScale: 1.4
+  apexGravityScale: 0.65
+  apexThreshold: 1.5
+  jumpCutScale: 2.5
   maxFovKick: 12
   fovSmoothing: 10
   dashFovPunch: 10
@@ -591,6 +596,18 @@ MonoBehaviour:
   dashShake: 0.5
   shakeAmplitude: 0.06
   shakeDecay: 3
+  bobStride: 1.6
+  bobVertical: 0.035
+  bobHorizontal: 0.02
+  bobRoll: 0.6
+  runLeanPitch: 1.5
+  runFovBonus: 4
+  swayAmount: 0.006
+  swayMax: 0.12
+  swayFollow: 8
+  jumpPitchKick: -1.5
+  landPitchKick: 3
+  pitchKickRecovery: 9
   dashTrail: {fileID: 0}
   dashBurst: {fileID: 0}
   slideSparks: {fileID: 0}
@@ -618,6 +635,9 @@ MonoBehaviour:
   onRunEnd:
     m_PersistentCalls:
       m_Calls: []
+  onFootstep:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &262046173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -638,6 +658,51 @@ MonoBehaviour:
   regenPerSecond: 25
   regenDelay: 0.8
   exhaustedRecoverFraction: 0.25
+--- !u!114 &262046174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262046169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32eed1c6cd5b54d49a947cc08efd8a29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAudio
+  footsteps:
+  - {fileID: 8300000, guid: 081a6511affd8eb43aa2280ad301c9ca, type: 3}
+  - {fileID: 8300000, guid: d86db52fc995ac543a966b18980aad33, type: 3}
+  - {fileID: 8300000, guid: 6cc14ed180704d04cbc4fca6415ab910, type: 3}
+  jumps:
+  - {fileID: 8300000, guid: cc0a68c3a9de35e4087e924585184e0e, type: 3}
+  - {fileID: 8300000, guid: 83e134e57f8995948b6fe06b793cd666, type: 3}
+  - {fileID: 8300000, guid: ad9ef0e4ea9afe04fbc175c2d8ff3a7e, type: 3}
+  wallJumps:
+  - {fileID: 8300000, guid: 598ba4726c3423c4085157ba36e4961d, type: 3}
+  - {fileID: 8300000, guid: b868d538e4ba6774eb0f3108da10260b, type: 3}
+  - {fileID: 8300000, guid: 16f311aa02e86d24bbabce82c0e857ee, type: 3}
+  landings:
+  - {fileID: 8300000, guid: 01e7b4e300825dd4f89a46f805909272, type: 3}
+  - {fileID: 8300000, guid: 25451313ce7483f448ce72a5072cb040, type: 3}
+  - {fileID: 8300000, guid: 2651b6c141761a8479aef0997b14ae16, type: 3}
+  dashes:
+  - {fileID: 8300000, guid: 2b97dac5eb70946498800686f48df1a0, type: 3}
+  - {fileID: 8300000, guid: bb3b7076a7fc7ca48894aa758f527004, type: 3}
+  - {fileID: 8300000, guid: 7ebe3d6782ac8b742a8ec65c975086e3, type: 3}
+  slideStart: {fileID: 8300000, guid: 5874381f1178d68429513ac9b8201b0b, type: 3}
+  slideEnd: {fileID: 8300000, guid: 1d8e7a90444a804448d3c37f04622523, type: 3}
+  slideLoop: {fileID: 8300000, guid: 08b9c7c7fd083f048bc018a149876a0d, type: 3}
+  windLoop: {fileID: 8300000, guid: 6e42e5b50845ebc42bd2f0431e70145d, type: 3}
+  footstepVolume: 0.5
+  sfxVolume: 0.8
+  slideLoopVolume: 0.6
+  windMaxVolume: 1
+  pitchVariation: 0.08
+  windStartSpeed: 1
+  windMaxSpeed: 16
+  windPitchRange: {x: 0.8, y: 1.3}
+  loopSmoothing: 6
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1230,6 +1295,7 @@ GameObject:
   m_Component:
   - component: {fileID: 832575519}
   - component: {fileID: 832575518}
+  - component: {fileID: 832575520}
   m_Layer: 0
   m_Name: Global Volume
   m_TagString: Untagged
@@ -1269,6 +1335,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &832575520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832575517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0630634b332455146975223f10f46e8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpeedPostFX
+  player: {fileID: 262046172}
+  startSpeed: 1
+  maxSpeed: 22
+  smoothing: 8
+  vignetteIdle: 0.15
+  vignetteFast: 0.35
+  chromaFast: 0.5
+  lensFast: -0.2
 --- !u!1 &960182120
 GameObject:
   m_ObjectHideFlags: 0

@@ -80,6 +80,15 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Max fall speed while pushing into a wall. 0 disables wall sliding.")]
     [SerializeField] private float wallSlideFallSpeed = 4f;
 
+    [Header("Jump Feel")]
+    [Tooltip("Gravity multiplier while falling. Higher = snappier landings.")]
+    [SerializeField] private float fallGravityScale = 1.4f;
+    [Tooltip("Gravity multiplier near the top of a jump. Lower = a brief hang.")]
+    [SerializeField] private float apexGravityScale = 0.65f;
+    [SerializeField] private float apexThreshold = 1.5f;
+    [Tooltip("Gravity multiplier when you let go of jump early (variable jump height).")]
+    [SerializeField] private float jumpCutScale = 2.5f;
+
     [Header("Camera Juice")]
     [SerializeField] private float maxFovKick = 12f;
     [SerializeField] private float fovSmoothing = 10f;
@@ -98,6 +107,21 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float shakeAmplitude = 0.06f;
     [SerializeField] private float shakeDecay = 3f;
 
+    [Header("Camera Motion")]
+    [SerializeField] private float bobStride = 1.6f;
+    [SerializeField] private float bobVertical = 0.035f;
+    [SerializeField] private float bobHorizontal = 0.02f;
+    [SerializeField] private float bobRoll = 0.6f;
+    [SerializeField] private float runLeanPitch = 1.5f;
+    [SerializeField] private float runFovBonus = 4f;
+    [Tooltip("How far the camera trails behind sudden speed changes.")]
+    [SerializeField] private float swayAmount = 0.006f;
+    [SerializeField] private float swayMax = 0.12f;
+    [SerializeField] private float swayFollow = 8f;
+    [SerializeField] private float jumpPitchKick = -1.5f;
+    [SerializeField] private float landPitchKick = 3f;
+    [SerializeField] private float pitchKickRecovery = 9f;
+
     [Header("Optional Effects")]
     [SerializeField] private TrailRenderer dashTrail;
     [SerializeField] private ParticleSystem dashBurst;
@@ -112,14 +136,16 @@ public class PlayerController : MonoBehaviour
     public UnityEvent onSlideEnd;
     public UnityEvent onRunStart;
     public UnityEvent onRunEnd;
+    public UnityEvent onFootstep;
 
-    // Things for HUD and other scripts
+    // Handy for HUD / other scripts
     public bool IsDashing => state == MoveState.Dashing;
     public bool IsSliding => state == MoveState.Sliding;
     public bool IsWallSliding => isWallSliding;
     public bool IsRunning => isRunning;
+    public float LastLandSpeed { get; private set; }
 
-    // Permission flags
+    // Permission flags: external systems (e.g. stamina) can switch abilities off without touching this script
     public bool AllowRun { get; set; } = true;
     public bool AllowDash { get; set; } = true;
     public bool AllowSlide { get; set; } = true;
@@ -168,6 +194,12 @@ public class PlayerController : MonoBehaviour
     private float cameraYOffset;
     private float landOffset;
     private float trauma;
+    private bool canCutJump;
+    private float bobPhase;
+    private float bobBlend;
+    private float leanPitch;
+    private float pitchKick;
+    private Vector3 swayVelocity;
 
     private void Awake()
     {
@@ -249,7 +281,7 @@ public class PlayerController : MonoBehaviour
         if (jumpAction.WasPressedThisFrame()) lastJumpPressedTime = Time.time;
         if (slideAction.WasPressedThisFrame()) lastSlidePressedTime = Time.time;
 
-        // Tap shift = dash and hold = run
+        // Shift: a quick tap (released within the threshold) is a dash, holding it is a run
         if (dashAction.WasPressedThisFrame()) shiftDownTime = Time.time;
         dashTapped = dashAction.WasReleasedThisFrame() && Time.time - shiftDownTime <= runHoldThreshold;
 
@@ -259,7 +291,7 @@ public class PlayerController : MonoBehaviour
         TryStartDash(wishDir, grounded);
         TryJump();
 
-        // No longer on the ground after jumping this frame
+        // After a jump this frame we're no longer "on the ground" for movement purposes
         bool onGround = grounded && verticalVelocity <= 0f;
 
         TryStartSlide(wishDir, onGround);
@@ -289,7 +321,7 @@ public class PlayerController : MonoBehaviour
                 break;
         }
 
-        // Wall slide means airborne, falling, pushing into a wall we touched in the last moment
+        // Wall slide: airborne, falling, pushing into a wall we touched in the last moment
         isWallSliding = wallSlideFallSpeed > 0f
             && state == MoveState.Normal
             && !grounded
@@ -302,7 +334,7 @@ public class PlayerController : MonoBehaviour
         Vector3 velocity = horizontalVelocity + Vector3.up * verticalVelocity;
         CollisionFlags flags = controller.Move(velocity * dt);
 
-        // When hitting a wall, keep only the speed we actually moved at, so we slide along it
+        // Hit a wall? Keep only the speed we actually moved at, so we slide along it
         if ((flags & CollisionFlags.Sides) != 0)
         {
             Vector3 actual = controller.velocity;
@@ -321,7 +353,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Camera
+    // ───────────────────────── Look ─────────────────────────
 
     private void HandleLook()
     {
@@ -333,7 +365,7 @@ public class PlayerController : MonoBehaviour
         // Rotation is applied in UpdateCamera so roll can be added
     }
 
-    // Movement
+    // ───────────────────────── Ground movement ─────────────────────────
 
     private void UpdateNormalMovement(Vector3 wishDir, bool onGround, float dt)
     {
@@ -343,7 +375,7 @@ public class PlayerController : MonoBehaviour
 
         if (speed > targetSpeed + 0.1f && (hasInput || !onGround))
         {
-            // Momentum
+            // Carrying momentum: bleed it off slowly, let input bend it
             float decay = onGround ? groundOverspeedDecay : airOverspeedDecay;
             float newSpeed = Mathf.MoveTowards(speed, targetSpeed, decay * dt);
             Vector3 dir = horizontalVelocity / speed;
@@ -362,7 +394,7 @@ public class PlayerController : MonoBehaviour
     {
         if (state == MoveState.Dashing)
         {
-            // Ground dashes stick to the floor / Air Dashes let the player keep momentum
+            // Ground dashes stay glued to the floor, air dashes go flat
             verticalVelocity = dashGrounded ? groundStickVelocity : 0f;
             return;
         }
@@ -370,25 +402,40 @@ public class PlayerController : MonoBehaviour
         if (grounded && verticalVelocity < 0f)
             verticalVelocity = state == MoveState.Sliding ? slideStickVelocity : groundStickVelocity;
 
-        verticalVelocity += gravity * dt;
+        verticalVelocity += gravity * GravityScale(grounded) * dt;
 
         if (isWallSliding)
             verticalVelocity = Mathf.Max(verticalVelocity, -wallSlideFallSpeed);
     }
 
+    private float GravityScale(bool grounded)
+    {
+        if (verticalVelocity > 0f)
+        {
+            if (canCutJump && !jumpAction.IsPressed()) return jumpCutScale;
+            return verticalVelocity < apexThreshold ? apexGravityScale : 1f;
+        }
+
+        canCutJump = false;
+        if (grounded) return 1f;
+        return -verticalVelocity < apexThreshold ? apexGravityScale : fallGravityScale;
+    }
+
     private void HandleLanding()
     {
         float fallSpeed = -verticalVelocity;
+        LastLandSpeed = fallSpeed;
         if (fallSpeed > 3f) onLand?.Invoke();
 
         if (fallSpeed > landDipMinSpeed)
         {
             float t = Mathf.Clamp01((fallSpeed - landDipMinSpeed) / 10f);
             landOffset = -t * landDipAmount;
+            pitchKick = landPitchKick * t;
         }
     }
 
-    // Jump
+    // ───────────────────────── Jump ─────────────────────────
 
     private void TryJump()
     {
@@ -404,7 +451,7 @@ public class PlayerController : MonoBehaviour
 
         if (state == MoveState.Dashing)
         {
-            // Dash-jump (keeps speed)
+            // Dash-jump: cancel the dash but keep most of the speed
             EndDash(dashSpeed * dashJumpCarry);
         }
         else if (state == MoveState.Sliding)
@@ -415,14 +462,16 @@ public class PlayerController : MonoBehaviour
         }
 
         verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        canCutJump = true;
+        pitchKick = jumpPitchKick;
         lastGroundedTime = -10f;
         lastJumpPressedTime = -10f;
         onJump?.Invoke();
     }
 
-    // Wall Jump
+    // ───────────────────────── Wall jump ─────────────────────────
 
-    // Called whenever the Character bumps into something during Move
+    // Called by Unity whenever the CharacterController bumps into something during Move
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         if (Mathf.Abs(hit.normal.y) > 0.3f) return; // floors/ceilings/steep ramps aren't walls
@@ -466,6 +515,8 @@ public class PlayerController : MonoBehaviour
         float speed = Mathf.Min(Mathf.Max(wallJumpSpeed, carried * wallJumpSpeedKeep), dashSpeed);
         horizontalVelocity = dir * speed;
         verticalVelocity = Mathf.Sqrt(wallJumpHeight * -2f * gravity);
+        canCutJump = false;
+        pitchKick = jumpPitchKick;
 
         wallJumpsUsed++;
         nextWallJumpTime = Time.time + wallJumpCooldown;
@@ -477,7 +528,7 @@ public class PlayerController : MonoBehaviour
         onWallJump?.Invoke();
     }
 
-    // Dash
+    // ───────────────────────── Dash ─────────────────────────
 
     private void TryStartDash(Vector3 wishDir, bool grounded)
     {
@@ -513,7 +564,7 @@ public class PlayerController : MonoBehaviour
         if (dashTrail != null) dashTrail.emitting = false;
     }
 
-    // Slide
+    // ───────────────────────── Slide ─────────────────────────
 
     private void TryStartSlide(Vector3 wishDir, bool onGround)
     {
@@ -613,16 +664,21 @@ public class PlayerController : MonoBehaviour
         return transform.position + controller.center - Vector3.up * (controller.height * 0.5f);
     }
 
-    // Camera Juice
+    // ───────────────────────── Camera juice ─────────────────────────
+
+    private static bool CrossedPhase(float prev, float cur, bool wrapped, float target)
+    {
+        return wrapped ? (target > prev || target <= cur) : (prev < target && cur >= target);
+    }
 
     private void UpdateCamera(float dt)
     {
         float speed = horizontalVelocity.magnitude;
 
-        // FOV: widens with speed, plus a punch on each dash
+        // FOV: widens with speed, extra while running, punch on dash / wall jump
         fovPunch = Mathf.Lerp(fovPunch, 0f, 1f - Mathf.Exp(-fovPunchDecay * dt));
         float speedT = Mathf.InverseLerp(moveSpeed, dashSpeed, speed);
-        float targetFov = baseFov + speedT * maxFovKick + fovPunch;
+        float targetFov = baseFov + speedT * maxFovKick + (isRunning ? runFovBonus : 0f) + fovPunch;
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFov, 1f - Mathf.Exp(-fovSmoothing * dt));
 
         // Roll: lean into sideways movement (strafe, side dashes, curved slides)
@@ -634,6 +690,33 @@ public class PlayerController : MonoBehaviour
             targetRoll += Vector3.Dot(-wallNormal, transform.right) * wallSlideRoll;
         roll = Mathf.Lerp(roll, targetRoll, 1f - Mathf.Exp(-rollSmoothing * dt));
 
+        // Head bob: grounded walking/running only, scaled by speed
+        bool bobbing = controller.isGrounded && state == MoveState.Normal && speed > 0.5f;
+        bobBlend = Mathf.Lerp(bobBlend, bobbing ? Mathf.Clamp01(speed / runSpeed) : 0f, 1f - Mathf.Exp(-10f * dt));
+        float prevPhase = bobPhase;
+        bobPhase += speed * bobStride * dt;
+        bool wrapped = bobPhase > Mathf.PI * 2f;
+        if (wrapped) bobPhase -= Mathf.PI * 2f;
+
+        // Footstep each time the bob bottoms out (twice per cycle)
+        if (bobbing && (CrossedPhase(prevPhase, bobPhase, wrapped, Mathf.PI * 0.75f)
+                     || CrossedPhase(prevPhase, bobPhase, wrapped, Mathf.PI * 1.75f)))
+            onFootstep?.Invoke();
+        float bobY = Mathf.Sin(bobPhase * 2f) * bobVertical * bobBlend;
+        float bobX = Mathf.Cos(bobPhase) * bobHorizontal * bobBlend;
+        float bobTilt = Mathf.Cos(bobPhase) * bobRoll * bobBlend;
+
+        // Pitch: slight forward lean while running, plus kicks from jumps and landings
+        leanPitch = Mathf.Lerp(leanPitch, isRunning ? runLeanPitch : 0f, 1f - Mathf.Exp(-6f * dt));
+        pitchKick = Mathf.Lerp(pitchKick, 0f, 1f - Mathf.Exp(-pitchKickRecovery * dt));
+
+        // Inertia: the camera lags behind sudden speed changes (dash start, jump, wall hit)
+        Vector3 vel = new Vector3(horizontalVelocity.x, verticalVelocity, horizontalVelocity.z);
+        swayVelocity = Vector3.Lerp(swayVelocity, vel, 1f - Mathf.Exp(-swayFollow * dt));
+        Vector3 lag = transform.InverseTransformDirection(swayVelocity - vel);
+        lag.y *= 0.5f;
+        Vector3 sway = Vector3.ClampMagnitude(lag * swayAmount, swayMax);
+
         // Height: drop during slide, dip on hard landings
         float targetY = state == MoveState.Sliding ? -slideCameraDrop : 0f;
         cameraYOffset = Mathf.Lerp(cameraYOffset, targetY, 1f - Mathf.Exp(-cameraHeightSmoothing * dt));
@@ -643,7 +726,8 @@ public class PlayerController : MonoBehaviour
         trauma = Mathf.MoveTowards(trauma, 0f, shakeDecay * dt);
         Vector3 shake = trauma > 0f ? Random.insideUnitSphere * (shakeAmplitude * trauma * trauma) : Vector3.zero;
 
-        cameraPivot.localPosition = cameraBaseLocalPos + Vector3.up * (cameraYOffset + landOffset) + shake;
-        cameraPivot.localRotation = Quaternion.Euler(pitch, 0f, roll);
+        Vector3 offset = new Vector3(bobX, cameraYOffset + landOffset + bobY, 0f) + sway;
+        cameraPivot.localPosition = cameraBaseLocalPos + offset + shake;
+        cameraPivot.localRotation = Quaternion.Euler(pitch + pitchKick + leanPitch, 0f, roll + bobTilt);
     }
 }
