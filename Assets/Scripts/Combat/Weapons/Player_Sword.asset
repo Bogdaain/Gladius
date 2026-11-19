@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eea38a8548d9e644fab41d0b396e2610, type: 3}
+  m_Name: Player_Sword
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.WeaponData
+  displayName: Player_Sword
+  range: 2.2
+  radius: 0.4
+  hittableMask:
+    serializedVersion: 2
+    m_Bits: 64
+  lightDamage: 12
+  lightWindup: 0.12
+  lightRecovery: 0.28
+  lightStaminaCost: 10
+  heavyDamage: 28
+  heavyWindup: 0.32
+  heavyRecovery: 0.55
+  heavyStaminaCost: 25
+  heavyHoldThreshold: 0.22
+  blockDamageMultiplier: 0.3
+  parryWindow: 0.18
+  parryStunDuration: 1.2
+  blockStaminaCost: 12
