@@ -231,6 +231,104 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &93861139
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 93861140}
+  - component: {fileID: 93861142}
+  - component: {fileID: 93861141}
+  - component: {fileID: 93861143}
+  m_Layer: 5
+  m_Name: Crosshair
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &93861140
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 93861139}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 694920747}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &93861141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 93861139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &93861142
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 93861139}
+  m_CullTransparentMesh: 1
+--- !u!114 &93861143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 93861139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c34190dd559a9064893f97c431e5f98d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.UI.ChargeCrosshair
+  combat: {fileID: 262046176}
+  image: {fileID: 0}
+  idleColor: {r: 0.7, g: 0.7, b: 0.7, a: 0.8}
+  fullColor: {r: 0.95, g: 0.2, b: 0.2, a: 1}
+  size: 64
+  armThickness: 3
+  centerGap: 6
+  colorLerp: 10
+  blinkThreshold: 0.999
+  blinkSpeed: 8
 --- !u!1 &128433262
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,16 +354,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 128433262}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.10452837, w: 0.9945219}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 4, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 893695736}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -12}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -52, y: 5}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &128433264
@@ -289,14 +387,14 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
-    m_FontStyle: 0
+    m_Font: {fileID: 12800000, guid: 8a2b9e2a607dd2143b58c44bc32410b4, type: 3}
+    m_FontSize: 21
+    m_FontStyle: 3
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 0
     m_MaxSize: 40
-    m_Alignment: 0
-    m_AlignByGeometry: 0
+    m_Alignment: 4
+    m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
@@ -549,7 +647,10 @@ GameObject:
   - component: {fileID: 262046174}
   - component: {fileID: 262046177}
   - component: {fileID: 262046176}
-  m_Layer: 0
+  - component: {fileID: 262046178}
+  - component: {fileID: 262046180}
+  - component: {fileID: 262046179}
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -752,9 +853,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAudio
   footsteps:
-  - {fileID: 8300000, guid: 081a6511affd8eb43aa2280ad301c9ca, type: 3}
-  - {fileID: 8300000, guid: d86db52fc995ac543a966b18980aad33, type: 3}
-  - {fileID: 8300000, guid: 6cc14ed180704d04cbc4fca6415ab910, type: 3}
+  - {fileID: 8300000, guid: 605347a00d4fb7d429e6cb2bd5a96373, type: 3}
+  - {fileID: 8300000, guid: 0277dbe33397ec147a4a6874694e44ac, type: 3}
+  - {fileID: 8300000, guid: d7072e00b1f9bcb4085922d54043600c, type: 3}
   jumps:
   - {fileID: 8300000, guid: cc0a68c3a9de35e4087e924585184e0e, type: 3}
   - {fileID: 8300000, guid: 83e134e57f8995948b6fe06b793cd666, type: 3}
@@ -801,8 +902,35 @@ MonoBehaviour:
   stamina: {fileID: 262046173}
   onLightSwing:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 262046180}
+        m_TargetAssemblyTypeName: Gladius.Combat.CombatAudio, Assembly-CSharp
+        m_MethodName: PlaySwing
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onHeavySwing:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 262046180}
+        m_TargetAssemblyTypeName: Gladius.Combat.CombatAudio, Assembly-CSharp
+        m_MethodName: PlayHeavySwing
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onHeavyChargeStart:
     m_PersistentCalls:
       m_Calls: []
   onGuardRaise:
@@ -847,6 +975,91 @@ MonoBehaviour:
   onDied:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &262046178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262046169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 719dfb7683d39db42a029c83cf21fcaf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.CombatFeedback
+  bloodPrefab: {fileID: 0}
+  bloodColor: {r: 0.55, g: 0.02, b: 0.02, a: 1}
+  lightBloodCount: 18
+  heavyBloodCount: 40
+  blockSparkColor: {r: 1, g: 0.85, b: 0.4, a: 1}
+  parrySparkColor: {r: 0.6, g: 0.9, b: 1, a: 1}
+  lightHitTrauma: 0.25
+  heavyHitTrauma: 0.5
+  blockTrauma: 0.15
+  parryTrauma: 0.4
+  lightHitstop: 0.04
+  heavyHitstop: 0.08
+  blockHitstop: 0.03
+  parryHitstop: 0.12
+  hitstopDamageReference: 40
+  hitstopDamageBonus: 0.08
+--- !u!114 &262046179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262046169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c445558ca5e84b045acc0d0c799e39ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.Knockback
+  lightForce: 20
+  heavyForce: 40
+  blockedScale: 0.4
+  decay: 12
+  horizontalOnly: 0
+--- !u!114 &262046180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262046169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fce29c4a3b5c0c34c8a1584f2e0103c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.CombatAudio
+  lightSwings:
+  - {fileID: 8300000, guid: 25999dfc515d1ff46b8a5d950d60d5df, type: 3}
+  - {fileID: 8300000, guid: 830fb3252a215e24294d9b5e5205db7f, type: 3}
+  - {fileID: 8300000, guid: 6927dde3253f2af48911ce1015ac616f, type: 3}
+  heavySwings:
+  - {fileID: 8300000, guid: 31c2cb09a581c10428b74d992d7c6f4f, type: 3}
+  - {fileID: 8300000, guid: 80d74949aa7d0ac4dbade0d1041d9a90, type: 3}
+  - {fileID: 8300000, guid: ab05618993fbd00469972d2a7093a17a, type: 3}
+  fleshHits:
+  - {fileID: 8300000, guid: 023cf7191d7e2f648b07d6b171eb9e66, type: 3}
+  - {fileID: 8300000, guid: adc5c1e0925b62a429321db6c9977e92, type: 3}
+  - {fileID: 8300000, guid: b70aba4701ad9a043a33353a73286806, type: 3}
+  blocks:
+  - {fileID: 8300000, guid: 492448b4005352d4eb88836312b6419a, type: 3}
+  - {fileID: 8300000, guid: e740311cdc227de4182ef30c4d8487ec, type: 3}
+  - {fileID: 8300000, guid: c9a7db9276a9a1e459f94d4e0cb59830, type: 3}
+  parries:
+  - {fileID: 8300000, guid: 678a3796d98195f429a7f11e963814b5, type: 3}
+  - {fileID: 8300000, guid: eb16271b3c520214eb69d101dd3f1ea5, type: 3}
+  - {fileID: 8300000, guid: f277049721b10a54c95ed458a98c61a4, type: 3}
+  deaths:
+  - {fileID: 8300000, guid: ba6e69fa104ebca44a06ce50d08343eb, type: 3}
+  - {fileID: 8300000, guid: 69a62b2a9ccd9a542b7052d573d77153, type: 3}
+  - {fileID: 8300000, guid: a7054acfa4a56184e827785287ef9f88, type: 3}
+  swingVolume: 0.7
+  impactVolume: 0.9
+  pitchVariation: 0.08
+  spatialBlend: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -860,7 +1073,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -1270,7 +1483,7 @@ RectTransform:
   m_GameObject: {fileID: 676904763}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 694920747}
@@ -1491,6 +1704,7 @@ RectTransform:
   m_Children:
   - {fileID: 1090638128}
   - {fileID: 676904766}
+  - {fileID: 93861140}
   - {fileID: 893695736}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1514,7 +1728,7 @@ MonoBehaviour:
   stamina: {fileID: 262046173}
   fill: {fileID: 1090638129}
   canvasGroup: {fileID: 0}
-  fullColor: {r: 0.19607843, g: 0.74509805, b: 0.27450982, a: 1}
+  fullColor: {r: 0.7340962, g: 0.8666667, b: 0.109803915, a: 1}
   midColor: {r: 0.95, g: 0.8, b: 0.25, a: 1}
   lowColor: {r: 0.9, g: 0.35, b: 0.25, a: 1}
   exhaustedColor: {r: 0.9, g: 0.25, b: 0.25, a: 1}
@@ -1645,13 +1859,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 128433263}
   - {fileID: 1986049963}
+  - {fileID: 128433263}
   m_Father: {fileID: 694920747}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 281, y: 166}
+  m_AnchoredPosition: {x: 300, y: 166}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &893695737
@@ -1894,9 +2108,13 @@ GameObject:
   - component: {fileID: 1189930783}
   - component: {fileID: 1189930782}
   - component: {fileID: 1189930790}
+  - component: {fileID: 1189930791}
+  - component: {fileID: 1189930792}
+  - component: {fileID: 1189930793}
+  - component: {fileID: 1189930794}
   m_Layer: 6
   m_Name: TestEnemy
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2108,6 +2326,111 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.UI.EnemyReadoutReporter
   readout: {fileID: 0}
+--- !u!114 &1189930791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189930781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c445558ca5e84b045acc0d0c799e39ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.Knockback
+  lightForce: 40
+  heavyForce: 80
+  blockedScale: 0.4
+  decay: 12
+  horizontalOnly: 0
+--- !u!114 &1189930792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189930781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 719dfb7683d39db42a029c83cf21fcaf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.CombatFeedback
+  bloodPrefab: {fileID: 0}
+  bloodColor: {r: 0.55, g: 0.02, b: 0.02, a: 1}
+  lightBloodCount: 18
+  heavyBloodCount: 40
+  blockSparkColor: {r: 1, g: 0.85, b: 0.4, a: 1}
+  parrySparkColor: {r: 0.6, g: 0.9, b: 1, a: 1}
+  lightHitTrauma: 0.25
+  heavyHitTrauma: 0.5
+  blockTrauma: 0.15
+  parryTrauma: 0.4
+  lightHitstop: 0.025
+  heavyHitstop: 0.4
+  blockHitstop: 0.1
+  parryHitstop: 0.3
+  hitstopDamageReference: 40
+  hitstopDamageBonus: 0.025
+--- !u!114 &1189930793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189930781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fce29c4a3b5c0c34c8a1584f2e0103c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.CombatAudio
+  lightSwings:
+  - {fileID: 8300000, guid: 25999dfc515d1ff46b8a5d950d60d5df, type: 3}
+  - {fileID: 8300000, guid: 830fb3252a215e24294d9b5e5205db7f, type: 3}
+  - {fileID: 8300000, guid: 6927dde3253f2af48911ce1015ac616f, type: 3}
+  heavySwings:
+  - {fileID: 8300000, guid: 31c2cb09a581c10428b74d992d7c6f4f, type: 3}
+  - {fileID: 8300000, guid: 80d74949aa7d0ac4dbade0d1041d9a90, type: 3}
+  - {fileID: 8300000, guid: ab05618993fbd00469972d2a7093a17a, type: 3}
+  fleshHits:
+  - {fileID: 8300000, guid: 023cf7191d7e2f648b07d6b171eb9e66, type: 3}
+  - {fileID: 8300000, guid: adc5c1e0925b62a429321db6c9977e92, type: 3}
+  - {fileID: 8300000, guid: b70aba4701ad9a043a33353a73286806, type: 3}
+  blocks:
+  - {fileID: 8300000, guid: 492448b4005352d4eb88836312b6419a, type: 3}
+  - {fileID: 8300000, guid: e740311cdc227de4182ef30c4d8487ec, type: 3}
+  - {fileID: 8300000, guid: c9a7db9276a9a1e459f94d4e0cb59830, type: 3}
+  parries:
+  - {fileID: 8300000, guid: 678a3796d98195f429a7f11e963814b5, type: 3}
+  - {fileID: 8300000, guid: eb16271b3c520214eb69d101dd3f1ea5, type: 3}
+  - {fileID: 8300000, guid: f277049721b10a54c95ed458a98c61a4, type: 3}
+  deaths:
+  - {fileID: 8300000, guid: ba6e69fa104ebca44a06ce50d08343eb, type: 3}
+  - {fileID: 8300000, guid: 69a62b2a9ccd9a542b7052d573d77153, type: 3}
+  - {fileID: 8300000, guid: a7054acfa4a56184e827785287ef9f88, type: 3}
+  swingVolume: 0.7
+  impactVolume: 0.9
+  pitchVariation: 0.08
+  spatialBlend: 1
+--- !u!114 &1189930794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189930781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a0c6568b732f794987c5608f5930aa6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.EnemyHitReaction
+  renderers: []
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  flashDuration: 0.25
+  flashStrength: 1
+  shakeTarget: {fileID: 0}
+  shakeAmplitude: 0.12
+  shakeDuration: 1.5
+  heavyShakeScale: 4
 --- !u!1 &1225655272
 GameObject:
   m_ObjectHideFlags: 0
@@ -2229,7 +2552,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1273718679}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Camera Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2364,6 +2687,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1972138633
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1972138635}
+  - component: {fileID: 1972138634}
+  m_Layer: 0
+  m_Name: Hitstop
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1972138634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1972138633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8f02a3017bd0e5498d43000e4ce318a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.Hitstop
+  frozenScale: 0.2
+  maxDuration: 2
+--- !u!4 &1972138635
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1972138633}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1986049962
 GameObject:
   m_ObjectHideFlags: 0
@@ -2389,16 +2758,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1986049962}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0.010835456, y: 0.034300655, z: 0.06070502, w: 0.99750745}
+  m_LocalPosition: {x: 0, y: 0, z: 28}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 893695736}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 1, y: 4, z: 7}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 63, y: -25.5}
+  m_AnchoredPosition: {x: 121, y: 17}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1986049964
@@ -2422,14 +2791,14 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
-    m_FontStyle: 0
+    m_Font: {fileID: 12800000, guid: 8a2b9e2a607dd2143b58c44bc32410b4, type: 3}
+    m_FontSize: 21
+    m_FontStyle: 3
     m_BestFit: 0
-    m_MinSize: 10
-    m_MaxSize: 40
-    m_Alignment: 0
-    m_AlignByGeometry: 0
+    m_MinSize: 0
+    m_MaxSize: 300
+    m_Alignment: 4
+    m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
@@ -2460,3 +2829,4 @@ SceneRoots:
   - {fileID: 694920747}
   - {fileID: 656576854}
   - {fileID: 1189930789}
+  - {fileID: 1972138635}

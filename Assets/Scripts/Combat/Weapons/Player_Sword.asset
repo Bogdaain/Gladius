@@ -13,20 +13,22 @@ MonoBehaviour:
   m_Name: Player_Sword
   m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.WeaponData
   displayName: Player_Sword
-  range: 2.2
-  radius: 0.4
+  range: 2
+  radius: 2
   hittableMask:
     serializedVersion: 2
     m_Bits: 64
   lightDamage: 12
-  lightWindup: 0.12
+  lightWindup: 0
   lightRecovery: 0.28
   lightStaminaCost: 10
   heavyDamage: 28
-  heavyWindup: 0.32
+  heavyWindup: 0
   heavyRecovery: 0.55
   heavyStaminaCost: 25
   heavyHoldThreshold: 0.22
+  heavyFullChargeTime: 1
+  heavyMaxChargeMultiplier: 2
   blockDamageMultiplier: 0.3
   parryWindow: 0.18
   parryStunDuration: 1.2

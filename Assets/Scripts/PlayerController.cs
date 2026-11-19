@@ -154,6 +154,13 @@ public class PlayerController : MonoBehaviour
     /// <summary>1 right after dashing, 0 when the dash is ready.</summary>
     public float DashCooldown01 => Mathf.Clamp01((nextDashTime - Time.time) / dashCooldown);
 
+    /// <summary>
+    /// Add to the camera shake budget (0..1). Combat feedback punches this so
+    /// hits and parries shake the same camera the movement already shakes,
+    /// rather than fighting it with a second system.
+    /// </summary>
+    public void AddTrauma(float amount) => trauma = Mathf.Min(1f, trauma + amount);
+
     private CharacterController controller;
     private InputAction moveAction, lookAction, jumpAction, dashAction, slideAction;
 

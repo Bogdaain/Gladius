@@ -30,13 +30,13 @@ namespace Gladius.Combat
         // Reused buffer so a swing allocates nothing.
         private readonly Collider[] overlaps = new Collider[16];
 
-        public SwingOutcome Swing(WeaponData weapon, AttackType type, GameObject owner)
+        public SwingOutcome Swing(WeaponData weapon, AttackType type, GameObject owner, float damageMultiplier = 1f)
         {
             if (weapon == null || origin == null) return SwingOutcome.Miss;
 
             Vector3 start = origin.position;
             Vector3 dir = origin.forward;
-            float damage = weapon.DamageFor(type);
+            float damage = weapon.DamageFor(type) * damageMultiplier;
 
             // Overlap a sphere centred partway down the reach. Unlike SphereCast,
             // OverlapSphere detects targets already touching us at melee range

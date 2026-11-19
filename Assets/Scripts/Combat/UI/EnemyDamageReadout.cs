@@ -58,10 +58,19 @@ namespace Gladius.Combat.UI
         private float lastDamage;
         private float totalScale = 1f;
 
+        private Vector3 totalBaseScale;
+        private Vector3 popBaseScale;
+
         private void Awake()
         {
             if (canvasGroup != null) canvasGroup.alpha = 0f;
-            if (damageLabel != null) popHome = damageLabel.rectTransform.anchoredPosition;
+            if (damageLabel != null)
+            {
+                popHome = damageLabel.rectTransform.anchoredPosition;
+                popBaseScale = damageLabel.rectTransform.localScale;
+            }
+            if (totalLabel != null)
+                totalBaseScale = totalLabel.rectTransform.localScale;
         }
 
         /// <summary>
@@ -129,7 +138,7 @@ namespace Gladius.Combat.UI
             {
                 totalLabel.text = Mathf.CeilToInt(displayedTotal).ToString();
                 totalScale = Mathf.Lerp(totalScale, 1f, 1f - Mathf.Exp(-totalPunchRecovery * Time.deltaTime));
-                totalLabel.rectTransform.localScale = Vector3.one * totalScale;
+                totalLabel.rectTransform.localScale = totalBaseScale * totalScale;
             }
 
             // Visibility: full right after a hit, fading once the hold expires.
@@ -160,11 +169,12 @@ namespace Gladius.Combat.UI
             float ease = 1f - (1f - t) * (1f - t);
             damageLabel.rectTransform.anchoredPosition = popHome + Vector2.up * (popRiseDistance * ease);
 
-            // Scale: punch up fast, settle to 1 by about a third of the way through.
+            // Scale: punch up fast, settle back to the inspector size by about a
+            // third of the way through.
             float punch = t < 0.3f
                 ? Mathf.Lerp(popPunchScale, 1f, t / 0.3f)
                 : 1f;
-            damageLabel.rectTransform.localScale = Vector3.one * punch;
+            damageLabel.rectTransform.localScale = popBaseScale * punch;
 
             // Hold full opacity, then fade over the back half.
             Color c = popColor;

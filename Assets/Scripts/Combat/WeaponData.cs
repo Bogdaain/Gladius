@@ -30,13 +30,33 @@ namespace Gladius.Combat
         public float lightRecovery = 0.28f;
         public float lightStaminaCost = 10f;
 
-        [Header("Heavy attack (hold)")]
+        [Header("Heavy attack (hold to charge, release to swing)")]
         public float heavyDamage = 28f;
         public float heavyWindup = 0.32f;
         public float heavyRecovery = 0.55f;
         public float heavyStaminaCost = 25f;
-        [Tooltip("Hold the attack button at least this long to commit to a heavy.")]
+        [Tooltip("Hold the attack button at least this long to start charging a heavy. " +
+                 "Release before this and you throw a light attack instead.")]
         public float heavyHoldThreshold = 0.22f;
+        [Tooltip("Hold time (from the start of the press) at which the heavy is fully charged.")]
+        public float heavyFullChargeTime = 1f;
+        [Tooltip("Damage multiplier at full charge. 1 = no scaling; 2 = double heavy damage.")]
+        [Min(1f)] public float heavyMaxChargeMultiplier = 2f;
+
+        /// <summary>
+        /// Charge fraction (0..1) for a heavy held <paramref name="heldTime"/> seconds
+        /// from the press. 0 at the moment charging begins, 1 at full charge.
+        /// </summary>
+        public float ChargeFraction(float heldTime)
+        {
+            float span = heavyFullChargeTime - heavyHoldThreshold;
+            if (span <= 0f) return 1f;
+            return Mathf.Clamp01((heldTime - heavyHoldThreshold) / span);
+        }
+
+        /// <summary>Damage multiplier for a heavy at the given charge fraction (0..1).</summary>
+        public float ChargeDamageMultiplier(float chargeFraction) =>
+            Mathf.Lerp(1f, heavyMaxChargeMultiplier, Mathf.Clamp01(chargeFraction));
 
         [Header("Block / Parry")]
         [Tooltip("Fraction of damage that gets through while blocking. 0.3 = take 30%.")]

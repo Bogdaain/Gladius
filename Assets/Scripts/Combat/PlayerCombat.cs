@@ -6,7 +6,9 @@ namespace Gladius.Combat
 {
     /// <summary>
     /// Turns mouse input into attacks and guard.
-    ///   Left click  : tap for a light attack, hold past the weapon's threshold for a heavy.
+    ///   Left click  : a quick tap is a light attack. Hold past the weapon's
+    ///                 threshold to charge a heavy; release to swing it, dealing
+    ///                 more damage the longer it was charged (up to full charge).
     ///   Right click : raise guard. Releasing drops it. A hit taken within the
     ///                 weapon's parry window (measured from the press) is a parry.
     ///
@@ -25,7 +27,10 @@ namespace Gladius.Combat
 
         [Header("Events (hook audio / VFX here)")]
         public UnityEvent onLightSwing;
+        [Tooltip("A heavy swing was released. Fires with the final charge fraction (0..1).")]
         public UnityEvent onHeavySwing;
+        [Tooltip("Started charging a heavy (held past the threshold). Good for a wind-up effect.")]
+        public UnityEvent onHeavyChargeStart;
         public UnityEvent onGuardRaise;
         public UnityEvent onGuardDrop;
         [Tooltip("Our swing connected with a live target.")]
@@ -42,13 +47,17 @@ namespace Gladius.Combat
         // IGuardWeaponSource: the weapon used for block/parry windows.
         public WeaponData GuardWeapon => weapon;
 
+        /// <summary>0..1 charge of a heavy in progress; 0 when not charging. For UI/VFX.</summary>
+        public float ChargeProgress { get; private set; }
+
         private Health health;
         private InputAction attackAction, blockAction;
 
-        private enum State { Ready, WindingUp, Recovering, Stunned }
+        private enum State { Ready, Charging, WindingUp, Recovering, Stunned }
         private State state = State.Ready;
 
         private AttackType pendingType;
+        private float chargeMultiplier = 1f;
         private float attackDownTime = -100f;
         private bool attackHeld;
         private float swingStartTime;
@@ -69,13 +78,27 @@ namespace Gladius.Combat
         {
             attackAction.Enable();
             blockAction.Enable();
+            health.Hit += OnTookHit;
         }
 
         private void OnDisable()
         {
             attackAction.Disable();
             blockAction.Disable();
+            health.Hit -= OnTookHit;
             DropGuard();
+        }
+
+        // Getting struck mid-charge interrupts it (a blocked hit doesn't).
+        private void OnTookHit(HitInfo hit, HitResult result)
+        {
+            if (state == State.Charging && result == HitResult.Hit)
+            {
+                ChargeProgress = 0f;
+                attackHeld = false;
+                state = State.Recovering;
+                stateEndTime = Time.time + 0.2f;
+            }
         }
 
         private void OnDestroy()
@@ -137,28 +160,58 @@ namespace Gladius.Combat
 
             if (!attackHeld) return;
 
-            // Can only begin a swing from a settled state and not while guarding.
-            bool canStart = state == State.Ready && !guardUp;
+            float held = Time.time - attackDownTime;
 
-            // Commit to a heavy as soon as the hold passes the threshold.
-            if (canStart && attackAction.IsPressed() &&
-                Time.time - attackDownTime >= weapon.heavyHoldThreshold)
+            // From a settled, un-guarded state, crossing the threshold while still
+            // held promotes the press into a charging heavy (it doesn't swing yet).
+            if (state == State.Ready && !guardUp && attackAction.IsPressed() &&
+                held >= weapon.heavyHoldThreshold)
             {
-                attackHeld = false;
-                BeginSwing(AttackType.Heavy);
-                return;
+                EnterCharge();
             }
 
-            // A quick release before the threshold is a light attack.
+            // While charging, keep the public charge progress up to date for VFX/UI.
+            if (state == State.Charging)
+                ChargeProgress = weapon.ChargeFraction(Time.time - attackDownTime);
+
+            // Release ends the input, one way or another.
             if (attackAction.WasReleasedThisFrame())
             {
                 attackHeld = false;
-                if (canStart && Time.time - attackDownTime < weapon.heavyHoldThreshold)
-                    BeginSwing(AttackType.Light);
+
+                if (state == State.Charging)
+                {
+                    // Release a charged heavy, scaled by how far it got.
+                    float charge = weapon.ChargeFraction(held);
+                    ReleaseHeavy(charge);
+                }
+                else if (state == State.Ready && !guardUp && held < weapon.heavyHoldThreshold)
+                {
+                    // Quick tap before the threshold: a light attack.
+                    BeginSwing(AttackType.Light, 1f);
+                }
             }
         }
 
-        private void BeginSwing(AttackType type)
+        private void EnterCharge()
+        {
+            state = State.Charging;
+            pendingType = AttackType.Heavy;
+            ChargeProgress = 0f;
+            DropGuard();
+            onHeavyChargeStart?.Invoke();
+        }
+
+        private void ReleaseHeavy(float chargeFraction)
+        {
+            ChargeProgress = 0f;
+            float multiplier = weapon.ChargeDamageMultiplier(chargeFraction);
+            // We're leaving the Charging state; BeginSwing will set WindingUp.
+            state = State.Ready;
+            BeginSwing(AttackType.Heavy, multiplier);
+        }
+
+        private void BeginSwing(AttackType type, float damageMultiplier)
         {
             // Stamina gate, if a pool is present.
             if (stamina != null && !stamina.TrySpend(weapon.StaminaCostFor(type)))
@@ -166,6 +219,7 @@ namespace Gladius.Combat
 
             DropGuard();
             pendingType = type;
+            chargeMultiplier = damageMultiplier;
             state = State.WindingUp;
             swingStartTime = Time.time;
             hitResolveTime = Time.time + weapon.WindupFor(type);
@@ -192,7 +246,7 @@ namespace Gladius.Combat
         private void ResolveSwing()
         {
             var outcome = hitbox != null
-                ? hitbox.Swing(weapon, pendingType, gameObject)
+                ? hitbox.Swing(weapon, pendingType, gameObject, chargeMultiplier)
                 : MeleeHitbox.SwingOutcome.Miss;
 
             switch (outcome)
@@ -234,6 +288,8 @@ namespace Gladius.Combat
         {
             state = State.Stunned;
             stateEndTime = Time.time + duration;
+            ChargeProgress = 0f;
+            attackHeld = false;
             DropGuard();
             onStunned?.Invoke();
         }
