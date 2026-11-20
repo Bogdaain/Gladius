@@ -25,6 +25,9 @@ namespace Gladius.Combat
         private float resumeTime;
         private bool frozen;
 
+        /// <summary>True while a freeze-frame is active. False when no Hitstop exists.</summary>
+        public static bool IsFrozen => Instance != null && Instance.frozen;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)

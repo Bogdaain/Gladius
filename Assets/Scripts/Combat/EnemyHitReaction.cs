@@ -14,6 +14,10 @@ namespace Gladius.Combat
     /// so a scaled-time flash would freeze with everything else and never show. On
     /// unscaled time the blink and shake play through the freeze-frame, which is
     /// exactly the "blink just before the hitstop" read you want.
+    ///
+    /// The shake is applied ADDITIVELY: each frame it removes last frame's offset
+    /// and adds a fresh one, so it never fights the mover. Knockback (and the
+    /// enemy's own movement) still carry through no matter how long the shake runs.
     /// </summary>
     public class EnemyHitReaction : MonoBehaviour
     {
@@ -27,9 +31,10 @@ namespace Gladius.Combat
         [SerializeField, Range(0f, 1f)] private float flashStrength = 0.85f;
 
         [Header("Shake")]
-        [Tooltip("What to shake. Point this at the enemy's MODEL child, not the root " +
-                 "with the CharacterController, or the shake will fight the mover. " +
-                 "Defaults to this component's own transform.")]
+        [Tooltip("What to shake. Defaults to this component's own transform. The shake " +
+                 "is additive, so it's safe to leave this on the mover root; it won't " +
+                 "cancel knockback. Point it at a model child only if you want the " +
+                 "jitter isolated to the visuals.")]
         [SerializeField] private Transform shakeTarget;
         [Tooltip("Peak positional offset (metres).")]
         [SerializeField] private float shakeAmplitude = 0.12f;
@@ -47,8 +52,7 @@ namespace Gladius.Combat
         private static readonly int LegacyColorId = Shader.PropertyToID("_Color");
 
         private Transform shakeRoot;
-        private Vector3 shakeHome;
-        private bool homeStored;
+        private Vector3 appliedOffset;   // the shake offset currently baked into localPosition
 
         private float flashEndTime = -1f;
         private float shakeEndTime = -1f;
@@ -83,6 +87,11 @@ namespace Gladius.Combat
         {
             if (health != null) health.Hit -= OnHit;
             RestoreColors();
+
+            // Undo any shake offset so the transform isn't left nudged.
+            if (shakeRoot != null) shakeRoot.localPosition -= appliedOffset;
+            appliedOffset = Vector3.zero;
+            shakeEndTime = -1f;
         }
 
         private void OnHit(HitInfo hit, HitResult result)
@@ -99,12 +108,6 @@ namespace Gladius.Combat
             shakeAmpActive = shakeAmplitude * scale;
             shakeDurActive = shakeDuration;
             shakeEndTime = Time.unscaledTime + shakeDuration;
-
-            if (!homeStored)
-            {
-                shakeHome = shakeRoot.localPosition;
-                homeStored = true;
-            }
         }
 
         private void Update()
@@ -120,17 +123,19 @@ namespace Gladius.Combat
                 WriteColor(mats[i], Color.Lerp(baseColors[i], flashColor, flashT));
             }
 
-            // Shake: random offset that decays to nothing, then snap home.
+            // Shake additively: remove last frame's offset, then add a fresh one.
+            // This never fights the mover (Knockback / EnemyCombat), because the
+            // net position each frame is "wherever they moved us" plus a small
+            // jitter, instead of snapping back to a frozen home. So knockback still
+            // carries through no matter how long the shake lasts.
+            shakeRoot.localPosition -= appliedOffset;
+            appliedOffset = Vector3.zero;
+
             if (now < shakeEndTime)
             {
                 float remaining = (shakeEndTime - now) / Mathf.Max(0.0001f, shakeDurActive);
-                Vector3 offset = Random.insideUnitSphere * (shakeAmpActive * remaining);
-                shakeRoot.localPosition = shakeHome + offset;
-            }
-            else if (homeStored)
-            {
-                shakeRoot.localPosition = shakeHome;
-                homeStored = false;
+                appliedOffset = Random.insideUnitSphere * (shakeAmpActive * remaining);
+                shakeRoot.localPosition += appliedOffset;
             }
         }
 
