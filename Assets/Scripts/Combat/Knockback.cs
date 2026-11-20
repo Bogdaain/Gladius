@@ -12,6 +12,12 @@ namespace Gladius.Combat
     /// which plays nicely alongside a mover that calls Move the same frame (both
     /// displacements accumulate). Falls back to moving the transform if there's
     /// no controller.
+    ///
+    /// Runs on UNSCALED time on purpose. The hitstop that fires on the same blow
+    /// drops Time.timeScale to near zero, so a scaled-time shove would stall for
+    /// the whole freeze and then limp out late. On unscaled time the push plays
+    /// through the freeze-frame, so a good hit launches the target during the
+    /// pause, the satisfying "freeze, then they fly" read.
     /// </summary>
     [RequireComponent(typeof(Health))]
     public class Knockback : MonoBehaviour
@@ -60,12 +66,15 @@ namespace Gladius.Combat
         {
             if (velocity.sqrMagnitude < 0.0001f) return;
 
-            if (controller != null && controller.enabled)
-                controller.Move(velocity * Time.deltaTime);
-            else
-                transform.position += velocity * Time.deltaTime;
+            // Unscaled so the shove isn't stalled by the hitstop freeze (see class note).
+            float dt = Time.unscaledDeltaTime;
 
-            velocity = Vector3.Lerp(velocity, Vector3.zero, 1f - Mathf.Exp(-decay * Time.deltaTime));
+            if (controller != null && controller.enabled)
+                controller.Move(velocity * dt);
+            else
+                transform.position += velocity * dt;
+
+            velocity = Vector3.Lerp(velocity, Vector3.zero, 1f - Mathf.Exp(-decay * dt));
         }
     }
 }
