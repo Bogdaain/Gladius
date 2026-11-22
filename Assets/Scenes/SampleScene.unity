@@ -259,7 +259,7 @@ RectTransform:
   m_GameObject: {fileID: 93861139}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 694920747}
@@ -735,7 +735,7 @@ MonoBehaviour:
   dashCooldown: 0.2
   maxAirDashes: 2
   dashEndSpeed: 11
-  dashJumpCarry: 0.7
+  dashJumpCarry: 1
   slideStartSpeed: 11
   maxSlideSpeed: 24
   slideFriction: 5
@@ -902,34 +902,10 @@ MonoBehaviour:
   stamina: {fileID: 262046173}
   onLightSwing:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 262046180}
-        m_TargetAssemblyTypeName: Gladius.Combat.CombatAudio, Assembly-CSharp
-        m_MethodName: PlaySwing
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onHeavySwing:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 262046180}
-        m_TargetAssemblyTypeName: Gladius.Combat.CombatAudio, Assembly-CSharp
-        m_MethodName: PlayHeavySwing
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onHeavyChargeStart:
     m_PersistentCalls:
       m_Calls: []
@@ -1040,6 +1016,18 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 31c2cb09a581c10428b74d992d7c6f4f, type: 3}
   - {fileID: 8300000, guid: 80d74949aa7d0ac4dbade0d1041d9a90, type: 3}
   - {fileID: 8300000, guid: ab05618993fbd00469972d2a7093a17a, type: 3}
+  telegraphs:
+  - {fileID: 8300000, guid: 824e8ae9474f78d42ba40c7fe254a80d, type: 3}
+  - {fileID: 8300000, guid: 34a069ff2db98284fb9c8d59dcb2c5f0, type: 3}
+  - {fileID: 8300000, guid: 313f925f1c0203d48b1c0ef8cac2ecd1, type: 3}
+  guardRaises:
+  - {fileID: 8300000, guid: fa0440de095668a49ac7d1c2d74e2992, type: 3}
+  - {fileID: 8300000, guid: 0a86c37823f49ca4d995b7a49446fb44, type: 3}
+  - {fileID: 8300000, guid: 5e0d18d94cdd63a4eac82d9f1260f70e, type: 3}
+  guardDrops:
+  - {fileID: 8300000, guid: d0db313bc218ded4d9a429fe1129cfd1, type: 3}
+  - {fileID: 8300000, guid: 22b14c8bf22ae5040afccdeef86a611f, type: 3}
+  - {fileID: 8300000, guid: 106f908b24b3384488136d88af07cd55, type: 3}
   fleshHits:
   - {fileID: 8300000, guid: 023cf7191d7e2f648b07d6b171eb9e66, type: 3}
   - {fileID: 8300000, guid: adc5c1e0925b62a429321db6c9977e92, type: 3}
@@ -2391,6 +2379,18 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 31c2cb09a581c10428b74d992d7c6f4f, type: 3}
   - {fileID: 8300000, guid: 80d74949aa7d0ac4dbade0d1041d9a90, type: 3}
   - {fileID: 8300000, guid: ab05618993fbd00469972d2a7093a17a, type: 3}
+  telegraphs:
+  - {fileID: 8300000, guid: 824e8ae9474f78d42ba40c7fe254a80d, type: 3}
+  - {fileID: 8300000, guid: 34a069ff2db98284fb9c8d59dcb2c5f0, type: 3}
+  - {fileID: 8300000, guid: 313f925f1c0203d48b1c0ef8cac2ecd1, type: 3}
+  guardRaises:
+  - {fileID: 8300000, guid: fa0440de095668a49ac7d1c2d74e2992, type: 3}
+  - {fileID: 8300000, guid: 0a86c37823f49ca4d995b7a49446fb44, type: 3}
+  - {fileID: 8300000, guid: 5e0d18d94cdd63a4eac82d9f1260f70e, type: 3}
+  guardDrops:
+  - {fileID: 8300000, guid: d0db313bc218ded4d9a429fe1129cfd1, type: 3}
+  - {fileID: 8300000, guid: 22b14c8bf22ae5040afccdeef86a611f, type: 3}
+  - {fileID: 8300000, guid: 106f908b24b3384488136d88af07cd55, type: 3}
   fleshHits:
   - {fileID: 8300000, guid: 023cf7191d7e2f648b07d6b171eb9e66, type: 3}
   - {fileID: 8300000, guid: adc5c1e0925b62a429321db6c9977e92, type: 3}
@@ -2539,6 +2539,70 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.0134, y: 0.495, z: 4.851}
   m_LocalScale: {x: 11.167335, y: 1.0274875, z: 0.06652009}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1272019215
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1272019217}
+  - component: {fileID: 1272019216}
+  m_Layer: 0
+  m_Name: CombatMusic
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1272019216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272019215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2e2cd0c1c07d1e439dc4359f906b8e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.CombatMusic
+  fullLoop: {fileID: 8300000, guid: abe79591267c8034ea987d00c994afd3, type: 3}
+  fullToHalfLoop: {fileID: 8300000, guid: 83596fc440689f9459ef5529a8cd2300, type: 3}
+  halfLoop: {fileID: 8300000, guid: e374b72375e1867409707dfdbd365721, type: 3}
+  halfToLowLoop: {fileID: 8300000, guid: 371cab2cafc00ae4d9dc39f510c6f788, type: 3}
+  lowLoop: {fileID: 8300000, guid: e822648a12efdb445a647935524e0609, type: 3}
+  masterVolume: 0.4
+  stageThresholds: {x: 0.8, y: 0.6, z: 0.4, w: 0.2}
+  playerHealth: {fileID: 0}
+  playerCombat: {fileID: 0}
+  combatTimeout: 6
+  fadeInSpeed: 2
+  fadeOutSpeed: 0.6
+  intensityPerHit: 0.15
+  intensityCap: 0.5
+  intensityDecay: 0.25
+  blockDipDepth: 0.5
+  blockDipRecovery: 3
+  stageBlendSpeed: 2.5
+  hitstopPitch: 0.05
+  pitchRecovery: 8
+--- !u!4 &1272019217
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272019215}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.78802, y: 1.22838, z: -1.57502}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2830,3 +2894,4 @@ SceneRoots:
   - {fileID: 656576854}
   - {fileID: 1189930789}
   - {fileID: 1972138635}
+  - {fileID: 1272019217}

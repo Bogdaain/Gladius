@@ -4,24 +4,29 @@ using UnityEngine;
 namespace Gladius.Combat
 {
     /// <summary>
-    /// Combat sound, built on the same pooled-one-shot pattern as PlayerAudio.
-    /// Impact sounds (hit flesh, block clang, parry ring, death) come straight off
-    /// this character's <see cref="Health.Hit"/> event, so they're always in sync
-    /// with the damage. Swing "whoosh" clips are played by the combat script
-    /// through PlaySwing, wired on its onLightSwing / onHeavySwing events.
+    /// Combat sound, built on the same pooled-one-shot pattern as PlayerAudio, and
+    /// wired the same way: it subscribes to the combat events in code (AddListener),
+    /// so nothing needs dragging in the inspector. Just drop the component on a
+    /// character with a Health (and a PlayerCombat or EnemyCombat) and fill in clips.
     ///
-    /// Works on the player and on enemies; just give it the clips you want each
-    /// to use. A random clip is picked each time, with a little pitch variation,
-    /// exactly like the footstep system.
+    /// Impacts (flesh, block, parry, death) come off Health.Hit. Swings, guard, and
+    /// telegraph come off whichever combat script is on the same object. A random
+    /// clip is picked each time with a little pitch variation, like the footsteps.
     /// </summary>
     [RequireComponent(typeof(Health))]
     public class CombatAudio : MonoBehaviour
     {
-        [Header("Swings (call PlaySwing / PlayHeavySwing from the combat events)")]
+        [Header("Swings")]
         [SerializeField] private AudioClip[] lightSwings;
         [SerializeField] private AudioClip[] heavySwings;
+        [Tooltip("Enemy wind-up before a swing, a cue the player can parry to.")]
+        [SerializeField] private AudioClip[] telegraphs;
 
-        [Header("Impacts (auto-played from Health)")]
+        [Header("Guard")]
+        [SerializeField] private AudioClip[] guardRaises;
+        [SerializeField] private AudioClip[] guardDrops;
+
+        [Header("Impacts")]
         [SerializeField] private AudioClip[] fleshHits;
         [SerializeField] private AudioClip[] blocks;
         [SerializeField] private AudioClip[] parries;
@@ -37,12 +42,17 @@ namespace Gladius.Combat
         private const int PoolSize = 6;
 
         private Health health;
+        private PlayerCombat playerCombat; // one or the other, depending on the character
+        private EnemyCombat enemyCombat;
         private AudioSource[] pool;
         private int poolIndex;
 
         private void Awake()
         {
             health = GetComponent<Health>();
+            playerCombat = GetComponent<PlayerCombat>();
+            enemyCombat = GetComponent<EnemyCombat>();
+
             pool = new AudioSource[PoolSize];
             for (int i = 0; i < PoolSize; i++)
             {
@@ -53,8 +63,45 @@ namespace Gladius.Combat
             }
         }
 
-        private void OnEnable() => health.Hit += OnHit;
-        private void OnDisable() => health.Hit -= OnHit;
+        // Subscribe in code (AddListener), matching how PlayerAudio hooks the
+        // movement events. Nothing needs wiring in the inspector.
+        private void OnEnable()
+        {
+            health.Hit += OnHit;
+
+            if (playerCombat != null)
+            {
+                playerCombat.onLightSwing.AddListener(PlaySwing);
+                playerCombat.onHeavySwing.AddListener(PlayHeavySwing);
+                playerCombat.onGuardRaise.AddListener(PlayGuardRaise);
+                playerCombat.onGuardDrop.AddListener(PlayGuardDrop);
+            }
+
+            if (enemyCombat != null)
+            {
+                enemyCombat.onTelegraph.AddListener(PlayTelegraph);
+                enemyCombat.onSwing.AddListener(PlaySwing);
+            }
+        }
+
+        private void OnDisable()
+        {
+            health.Hit -= OnHit;
+
+            if (playerCombat != null)
+            {
+                playerCombat.onLightSwing.RemoveListener(PlaySwing);
+                playerCombat.onHeavySwing.RemoveListener(PlayHeavySwing);
+                playerCombat.onGuardRaise.RemoveListener(PlayGuardRaise);
+                playerCombat.onGuardDrop.RemoveListener(PlayGuardDrop);
+            }
+
+            if (enemyCombat != null)
+            {
+                enemyCombat.onTelegraph.RemoveListener(PlayTelegraph);
+                enemyCombat.onSwing.RemoveListener(PlaySwing);
+            }
+        }
 
         private void OnHit(HitInfo hit, HitResult result)
         {
@@ -68,9 +115,11 @@ namespace Gladius.Combat
             if (!health.IsAlive) PlayRandom(deaths, impactVolume);
         }
 
-        // Hook these on the combat script's swing events (onLightSwing / onHeavySwing).
-        public void PlaySwing() => PlayRandom(lightSwings, swingVolume);
-        public void PlayHeavySwing() => PlayRandom(heavySwings, swingVolume);
+        private void PlaySwing() => PlayRandom(lightSwings, swingVolume);
+        private void PlayHeavySwing() => PlayRandom(heavySwings, swingVolume);
+        private void PlayTelegraph() => PlayRandom(telegraphs, swingVolume);
+        private void PlayGuardRaise() => PlayRandom(guardRaises, swingVolume);
+        private void PlayGuardDrop() => PlayRandom(guardDrops, swingVolume);
 
         private void PlayRandom(AudioClip[] clips, float volume)
         {
