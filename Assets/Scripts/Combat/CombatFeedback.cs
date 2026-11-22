@@ -16,16 +16,26 @@ namespace Gladius.Combat
     [RequireComponent(typeof(Health))]
     public class CombatFeedback : MonoBehaviour
     {
-        [Header("Blood")]
-        [Tooltip("Optional. If left empty, a particle burst is generated in code.")]
+        [Header("Blood prefabs (leave empty to use the code-generated fallback)")]
+        [Tooltip("Spawned on a clean hit. If empty, a burst is generated in code.")]
         [SerializeField] private ParticleSystem bloodPrefab;
+        [Tooltip("Optional heavier burst for heavy hits. Falls back to bloodPrefab, then code.")]
+        [SerializeField] private ParticleSystem heavyBloodPrefab;
         [SerializeField] private Color bloodColor = new Color(0.55f, 0.02f, 0.02f);
         [SerializeField] private int lightBloodCount = 18;
         [SerializeField] private int heavyBloodCount = 40;
-        [Tooltip("Spark colour used for a blocked hit (metal clink).")]
+
+        [Header("Spark prefabs (leave empty to use the code-generated fallback)")]
+        [Tooltip("Spawned on a block. If empty, sparks are generated in code.")]
+        [SerializeField] private ParticleSystem blockSparkPrefab;
+        [Tooltip("Spawned on a parry. If empty, sparks are generated in code.")]
+        [SerializeField] private ParticleSystem parrySparkPrefab;
+        [Tooltip("Spark colour for a blocked hit, used only by the code fallback.")]
         [SerializeField] private Color blockSparkColor = new Color(1f, 0.85f, 0.4f);
-        [Tooltip("Spark colour used for a successful parry.")]
+        [Tooltip("Spark colour for a parry, used only by the code fallback.")]
         [SerializeField] private Color parrySparkColor = new Color(0.6f, 0.9f, 1f);
+        [Tooltip("Seconds before a spawned prefab instance is destroyed.")]
+        [SerializeField] private float prefabLifetime = 3f;
 
         [Header("Camera shake (only fires if this character has a PlayerController)")]
         [SerializeField, Range(0f, 1f)] private float lightHitTrauma = 0.25f;
@@ -54,8 +64,11 @@ namespace Gladius.Combat
         {
             health = GetComponent<Health>();
             player = GetComponentInParent<PlayerController>();
+
+            // Only build the code-generated fallbacks for slots that have no prefab.
+            // With prefabs assigned for everything, nothing is generated.
             if (bloodPrefab == null) bloodInstance = BuildBloodSystem();
-            sparkInstance = BuildSparkSystem();
+            if (blockSparkPrefab == null || parrySparkPrefab == null) sparkInstance = BuildSparkSystem();
         }
 
         private void OnEnable() => health.Hit += OnHit;
@@ -67,7 +80,7 @@ namespace Gladius.Combat
             {
                 case HitResult.Hit:
                     bool heavy = hit.Type == AttackType.Heavy;
-                    SpawnBlood(hit.Point, hit.Direction, heavy ? heavyBloodCount : lightBloodCount, bloodColor);
+                    SpawnBlood(hit.Point, hit.Direction, heavy);
                     Shake(heavy ? heavyHitTrauma : lightHitTrauma);
 
                     // Base freeze by attack type, stretched by how much damage landed
@@ -80,13 +93,13 @@ namespace Gladius.Combat
                     break;
 
                 case HitResult.Blocked:
-                    SpawnSparks(hit.Point, hit.Direction, 20, blockSparkColor);
+                    SpawnSparks(hit.Point, hit.Direction, blockSparkPrefab, 20, blockSparkColor);
                     Shake(blockTrauma);
                     Hitstop.Do(blockHitstop);
                     break;
 
                 case HitResult.Parried:
-                    SpawnSparks(hit.Point, hit.Direction, 35, parrySparkColor);
+                    SpawnSparks(hit.Point, hit.Direction, parrySparkPrefab, 35, parrySparkColor);
                     Shake(parryTrauma);
                     Hitstop.Do(parryHitstop);
                     break;
@@ -98,23 +111,25 @@ namespace Gladius.Combat
             if (player != null) player.AddTrauma(trauma);
         }
 
-        private void SpawnBlood(Vector3 point, Vector3 direction, int count, Color color)
+        private void SpawnBlood(Vector3 point, Vector3 direction, bool heavy)
         {
             if (direction.sqrMagnitude < 0.0001f) direction = Vector3.up;
             Quaternion rot = Quaternion.LookRotation(direction.normalized);
 
-            if (bloodPrefab != null)
+            // Prefer an authored prefab (heavy variant if given), else code fallback.
+            ParticleSystem prefab = heavy && heavyBloodPrefab != null ? heavyBloodPrefab : bloodPrefab;
+            if (prefab != null)
             {
-                var ps = Instantiate(bloodPrefab, point, rot);
-                ps.Emit(count);
-                Destroy(ps.gameObject, 3f);
+                var ps = Instantiate(prefab, point, rot);
+                ps.Play();
+                Destroy(ps.gameObject, prefabLifetime);
                 return;
             }
 
             bloodInstance.transform.SetPositionAndRotation(point, rot);
             var main = bloodInstance.main;
-            main.startColor = color;
-            bloodInstance.Emit(count);
+            main.startColor = bloodColor;
+            bloodInstance.Emit(heavy ? heavyBloodCount : lightBloodCount);
         }
 
         /// <summary>
@@ -122,11 +137,19 @@ namespace Gladius.Combat
         /// fly out and die quickly, with no gravity so they read as sparks rather
         /// than droplets. Distinct motion from blood so each outcome looks different.
         /// </summary>
-        private void SpawnSparks(Vector3 point, Vector3 direction, int count, Color color)
+        private void SpawnSparks(Vector3 point, Vector3 direction, ParticleSystem prefab, int count, Color color)
         {
             if (direction.sqrMagnitude < 0.0001f) direction = Vector3.up;
             // Sparks fly back toward the attacker (opposite the blow) plus scatter.
             Quaternion rot = Quaternion.LookRotation(-direction.normalized);
+
+            if (prefab != null)
+            {
+                var ps = Instantiate(prefab, point, rot);
+                ps.Play();
+                Destroy(ps.gameObject, prefabLifetime);
+                return;
+            }
 
             sparkInstance.transform.SetPositionAndRotation(point, rot);
             var main = sparkInstance.main;

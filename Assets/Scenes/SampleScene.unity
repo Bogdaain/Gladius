@@ -119,6 +119,68 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &38148025
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 38148026}
+  - component: {fileID: 38148027}
+  m_Layer: 0
+  m_Name: BloodSplatter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &38148026
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 38148025}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.10438, y: -0, z: -1.23618}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &38148027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 38148025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 799e59d77f7706748995e301a601d3e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.BloodSplatter
+  decalMaterial: {fileID: 2100000, guid: 980ab69b3cb8441479e08b305834ddf5, type: 2}
+  sizeRange: {x: 0.4, y: 1.1}
+  projectionDepth: 0.4
+  splatsPerHit: 3
+  reach: 4
+  spread: 55
+  surfaceMask:
+    serializedVersion: 2
+    m_Bits: 7
+  bodyClearance: 0.6
+  splatsOnDeath: 12
+  deathSpread: 120
+  deathSizeScale: 1.6
+  deathGibPrefab: {fileID: 2735494718854280276, guid: adb749c2f005df44ca4e6f1952fb90f1, type: 3}
+  gibLifetime: 10
+  maxSplats: 120
+  lifetime: 0
+  fadeDuration: 3
 --- !u!1 &73011580
 GameObject:
   m_ObjectHideFlags: 0
@@ -885,6 +947,8 @@ MonoBehaviour:
   windMaxSpeed: 16
   windPitchRange: {x: 0.8, y: 1.3}
   loopSmoothing: 6
+  combatMusic: {fileID: 0}
+  windCombatDuck: 0.7
 --- !u!114 &262046176
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -963,12 +1027,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 719dfb7683d39db42a029c83cf21fcaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.CombatFeedback
-  bloodPrefab: {fileID: 0}
+  bloodPrefab: {fileID: 1203764974086206663, guid: 98668e92b5c95a84cba6a50835721aa5, type: 3}
+  heavyBloodPrefab: {fileID: 2879056035825371397, guid: 581e9130bc9d906438f48f2190e006b3, type: 3}
   bloodColor: {r: 0.55, g: 0.02, b: 0.02, a: 1}
   lightBloodCount: 18
   heavyBloodCount: 40
+  blockSparkPrefab: {fileID: 6852620967561923472, guid: d9cf9c14ff8250742bf85e982de5c529, type: 3}
+  parrySparkPrefab: {fileID: 8205614027125565570, guid: 94cfbbefe4f88524a961e36cd8d8b88a, type: 3}
   blockSparkColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   parrySparkColor: {r: 0.6, g: 0.9, b: 1, a: 1}
+  prefabLifetime: 3
   lightHitTrauma: 0.25
   heavyHitTrauma: 0.5
   blockTrauma: 0.15
@@ -2100,6 +2168,8 @@ GameObject:
   - component: {fileID: 1189930792}
   - component: {fileID: 1189930793}
   - component: {fileID: 1189930794}
+  - component: {fileID: 1189930795}
+  - component: {fileID: 1189930797}
   m_Layer: 6
   m_Name: TestEnemy
   m_TagString: Untagged
@@ -2343,12 +2413,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 719dfb7683d39db42a029c83cf21fcaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.CombatFeedback
-  bloodPrefab: {fileID: 0}
+  bloodPrefab: {fileID: 1203764974086206663, guid: 98668e92b5c95a84cba6a50835721aa5, type: 3}
+  heavyBloodPrefab: {fileID: 2879056035825371397, guid: 581e9130bc9d906438f48f2190e006b3, type: 3}
   bloodColor: {r: 0.55, g: 0.02, b: 0.02, a: 1}
   lightBloodCount: 18
   heavyBloodCount: 40
+  blockSparkPrefab: {fileID: 6852620967561923472, guid: d9cf9c14ff8250742bf85e982de5c529, type: 3}
+  parrySparkPrefab: {fileID: 8205614027125565570, guid: 94cfbbefe4f88524a961e36cd8d8b88a, type: 3}
   blockSparkColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   parrySparkColor: {r: 0.6, g: 0.9, b: 1, a: 1}
+  prefabLifetime: 3
   lightHitTrauma: 0.25
   heavyHitTrauma: 0.5
   blockTrauma: 0.15
@@ -2431,6 +2505,40 @@ MonoBehaviour:
   shakeAmplitude: 0.12
   shakeDuration: 1.5
   heavyShakeScale: 4
+--- !u!114 &1189930795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189930781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5cb9137f66490f4895705eea6b71604, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.DeathHandler
+  disableOnDeath:
+  - {fileID: 1189930783}
+  - {fileID: 1189930791}
+  ragdollBodies: []
+  deathForce: 6
+  deathUpForce: 2
+  lingerTime: 4
+  dissolveTime: 2
+  dissolveProperty: _DissolveAmount
+--- !u!114 &1189930797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189930781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54fcd6eed375bbe42ad57ad02802bc38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.BloodSplatterReporter
+  splatter: {fileID: 0}
 --- !u!1 &1225655272
 GameObject:
   m_ObjectHideFlags: 0
@@ -2572,7 +2680,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2e2cd0c1c07d1e439dc4359f906b8e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gladius.Combat.CombatMusic
-  fullLoop: {fileID: 8300000, guid: abe79591267c8034ea987d00c994afd3, type: 3}
+  fullLoop: {fileID: 8300000, guid: 188406128cb9c03469ec3b783d54cb6d, type: 3}
   fullToHalfLoop: {fileID: 8300000, guid: 83596fc440689f9459ef5529a8cd2300, type: 3}
   halfLoop: {fileID: 8300000, guid: e374b72375e1867409707dfdbd365721, type: 3}
   halfToLowLoop: {fileID: 8300000, guid: 371cab2cafc00ae4d9dc39f510c6f788, type: 3}
@@ -2895,3 +3003,4 @@ SceneRoots:
   - {fileID: 1189930789}
   - {fileID: 1972138635}
   - {fileID: 1272019217}
+  - {fileID: 38148026}
