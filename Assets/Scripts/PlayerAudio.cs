@@ -28,6 +28,11 @@ public class PlayerAudio : MonoBehaviour
     [SerializeField] private float windMaxSpeed = 22f;
     [SerializeField] private Vector2 windPitchRange = new Vector2(0.8f, 1.3f);
     [SerializeField] private float loopSmoothing = 6f;
+    [Tooltip("Optional. When combat music is engaged, duck the wind by this much. " +
+             "Auto-found if left empty; no ducking if no CombatMusic exists.")]
+    [SerializeField] private Gladius.Combat.CombatMusic combatMusic;
+    [Tooltip("How far to lower the wind at full combat engagement. 1 = silence it, 0 = no duck.")]
+    [SerializeField, Range(0f, 1f)] private float windCombatDuck = 0.7f;
 
     private const int PoolSize = 6;
 
@@ -42,6 +47,7 @@ public class PlayerAudio : MonoBehaviour
     private void Awake()
     {
         player = GetComponent<PlayerController>();
+        if (combatMusic == null) combatMusic = FindAnyObjectByType<Gladius.Combat.CombatMusic>();
 
         pool = new AudioSource[PoolSize];
         for (int i = 0; i < PoolSize; i++) pool[i] = CreateSource(null);
@@ -85,7 +91,12 @@ public class PlayerAudio : MonoBehaviour
         if (windLoop != null)
         {
             float t = Mathf.InverseLerp(windStartSpeed, windMaxSpeed, speed);
-            windSource.volume = Mathf.Lerp(windSource.volume, t * windMaxVolume, k);
+
+            // Duck under combat music by its engagement level, so the wind drops
+            // away while the fight track is up and returns once combat ends.
+            float duck = combatMusic != null ? 1f - combatMusic.EngagementLevel * windCombatDuck : 1f;
+
+            windSource.volume = Mathf.Lerp(windSource.volume, t * windMaxVolume * duck, k);
             windSource.pitch = Mathf.Lerp(windPitchRange.x, windPitchRange.y, t);
         }
 

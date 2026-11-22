@@ -65,6 +65,10 @@ namespace Gladius.Combat
         [SerializeField, Range(0f, 1f)] private float hitstopPitch = 0.05f;
         [SerializeField] private float pitchRecovery = 8f;
 
+        /// <summary>0 when out of combat, 1 when fully engaged. Follows the music
+        /// fade, so other audio (e.g. wind) can duck under combat by this amount.</summary>
+        public float EngagementLevel => engagement;
+
         private AudioSource[] sources;     // one per Stage, index matches the enum
         private float[] stageMix;          // current blend weight per stage (0..1)
         private float engagement;          // 0 out of combat, 1 fully engaged
